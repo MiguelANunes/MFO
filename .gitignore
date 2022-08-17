@@ -1,0 +1,12 @@
+*_target
+*.vo
+*.vok
+*.vos
+*.glob
+.CoqMakefile.d
+CoqMakefile.conf
+*.out
+coq/.coq-native
+coq/.makefile.d
+coq/makefile.conf
+*.html
