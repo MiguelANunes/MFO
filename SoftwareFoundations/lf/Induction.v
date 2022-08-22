@@ -5,7 +5,6 @@
 
 (** Before getting started on this chapter, we need to import
     all of our definitions from the previous chapter: *)
-
 From LF Require Export Basics.
 
 (** For this [Require Export] command to work, Coq needs to be
