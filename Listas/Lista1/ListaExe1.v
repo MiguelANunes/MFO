@@ -183,14 +183,19 @@ Proof.
   intros n.
   induction n.
   - reflexivity.
-  - rewrite sum_Sn.
-    rewrite plus_n_1.
-    rewrite IHn.
-    rewrite plus_n_1.
-    rewrite div2_mult2_plus.
-    rewrite <- mult_2_n_plus.
+  - rewrite plus_n_1.
+    rewrite mult_n_Sm.
     rewrite mult_Sn_m.
-    assert(H: 1 + n = S(n)).
-    {rewrite add_comm. rewrite plus_n_1. reflexivity. }
+    rewrite sum_Sn.
+    assert(H: n * S n = S n * n). 
+    { rewrite mul_comm. reflexivity. }
     rewrite H.
+    rewrite mult_Sn_m.
+    rewrite add_assoc.
+    rewrite mult_2_n_plus.
+    rewrite <- div2_mult2_plus.
+    rewrite IHn.
+    rewrite <- mult_n_Sm.
+    rewrite plus_n_1. 
+    reflexivity.
 Qed.
