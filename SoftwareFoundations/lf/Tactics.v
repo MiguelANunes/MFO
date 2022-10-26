@@ -73,7 +73,11 @@ Theorem silly_ex : forall p,
   even p = true ->
   odd (S p) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  apply H0.
+  apply H.
+  apply H1.
+Qed.
 (** [] *)
 
 (** To use the [apply] tactic, the (conclusion of the) fact
@@ -109,7 +113,11 @@ Theorem rev_exercise1 : forall (l l' : list nat),
   l = rev l' ->
   l' = rev l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  rewrite H.
+  symmetry.
+  apply rev_involutive.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard, optional (apply_rewrite)
@@ -192,7 +200,11 @@ Example trans_eq_exercise : forall (n m o p : nat),
      (n + p) = m ->
      (n + p) = (minustwo o).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  transitivity m.
+  apply H0.
+  apply H.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -279,7 +291,16 @@ Example injection_ex3 : forall (X : Type) (x y z : X) (l j : list X),
   j = z :: l ->
   x = y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  injection H as H'.
+  rewrite <- H in H0.
+  injection H0.
+  intros.
+  transitivity z.
+  apply H'.
+  symmetry.
+  apply H1.
+Qed.
 (** [] *)
 
 (** So much for injectivity of constructors.  What about disjointness? *)
@@ -327,7 +348,9 @@ Example discriminate_ex3 :
     x :: y :: l = [] ->
     x = z.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  discriminate H.
+Qed.
 (** [] *)
 
 (** For a slightly more involved example, we can use [discriminate] to
@@ -593,7 +616,21 @@ Proof.
 Theorem eqb_true : forall n m,
   n =? m = true -> n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n.
+  - intros. 
+    destruct m.
+    + reflexivity.
+    + simpl in H.
+      discriminate H.
+  - intros.
+    destruct m eqn: E.
+    + simpl in H.
+      discriminate H.
+    + simpl in H.
+      apply IHn in H.
+      rewrite H.
+      reflexivity. 
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (eqb_true_informal)
@@ -615,7 +652,24 @@ Theorem plus_n_n_injective : forall n m,
   n + n = m + m ->
   n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n.
+  - intros.
+    destruct m.
+    + reflexivity.
+    + simpl in H.
+      discriminate H.
+  - intros.
+    destruct m.
+    + simpl in H.
+      discriminate H.
+    + apply f_equal.
+      apply IHn.
+      simpl in H.
+      rewrite <- plus_n_Sm in H.
+      rewrite <- plus_n_Sm in H.
+      injection H as H1.
+      apply H1.
+Qed.
 (** [] *)
 
 (** The strategy of doing fewer [intros] before an [induction] to
@@ -722,7 +776,22 @@ Theorem nth_error_after_last: forall (n : nat) (X : Type) (l : list X),
   length l = n ->
   nth_error l n = None.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  generalize dependent n.
+  induction l.
+  - intros.
+    simpl.
+    reflexivity.
+  - intros.
+    destruct n.
+    + simpl in H.
+      discriminate H.
+    + simpl.
+      apply IHl.
+      simpl in H.
+      injection H as H.
+      apply H.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -907,7 +976,15 @@ Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
   split l = (l1, l2) ->
   combine l1 l2 = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction l.
+  - simpl in H.
+    injection H as H0 H1.
+    rewrite <- H0.
+    rewrite <- H1.
+    reflexivity.
+  - 
+Abort.
 (** [] *)
 
 (** The [eqn:] part of the [destruct] tactic is optional; although
