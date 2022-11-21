@@ -832,6 +832,44 @@ Proof.
     + exists x. right.
       apply H1.
 Qed.
+
+Theorem exists_double: forall n m, 
+  n <=? m = true <-> exists x, m = n+x.
+Proof.
+  intros n m.
+  split.
+  - generalize dependent m.
+    induction n.
+    + intros m H0.
+      exists m.
+      reflexivity.
+    + intros m H0.
+      simpl.
+      destruct m.
+      * discriminate H0.
+      * simpl in H0.
+        apply IHn in H0.
+        destruct H0 as [x H0].
+        exists x.
+        f_equal.
+        apply H0.
+  - generalize dependent m.
+    induction n.
+    + reflexivity.
+    + intros m H0.
+      destruct m.
+      * destruct H0.
+        discriminate H.
+      * simpl.
+        apply IHn.
+        destruct H0 as [x H0].
+        exists x.
+        simpl in H0.
+        injection H0.
+        intros H1.
+        apply H1.
+Qed.
+
 (** [] *)
 
 (* ################################################################# *)
@@ -986,7 +1024,7 @@ Fixpoint All {T : Type} (P : T -> Prop) (l : list T) : Prop :=
     | h :: t => P h /\ All P t
   end.
 
-Theorem All_In :
+Theorem All_In:
   forall T (P : T -> Prop) (l : list T),
     (forall x, In x l -> P x) <->
     All P l.
@@ -1006,12 +1044,18 @@ Proof.
         intros x' H1.
         apply H0.
         simpl. right. apply H1.
-  - induction l.
-    + intros H x [].
-    + intros [H0 H1] x' [H2 | H3].
-      apply IHl.
-      * apply H1.
-      * 
+  - intros H0.
+    induction l.
+    + intros ? [].
+    + intros x' H3.
+      simpl in H0, H3.
+      destruct H0 as [H0 H1].
+      destruct H3 as [H2 | H3].
+      * rewrite <- H2.
+        apply H0.
+      * apply IHl.
+        -- apply H1.
+        -- apply H3.
 Qed.
 (** [] *)
 
@@ -1022,9 +1066,13 @@ Qed.
     [Peven], and it should return a property [P] such that [P n] is
     equivalent to [Podd n] when [n] is odd and equivalent to [Peven n]
     otherwise. *)
-
-Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop :=
+  fun (n: nat) =>
+    match odd n with
+      | true => Podd n
+      | false => Peven n
+    end
+.
 
 (** To test your definition, prove the following facts: *)
 
@@ -1034,7 +1082,14 @@ Theorem combine_odd_even_intro :
     (odd n = false -> Peven n) ->
     combine_odd_even Podd Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros HP0 HP1 n H0 H1.
+  unfold combine_odd_even.
+  destruct (odd n) eqn: Eodd.
+  - apply H0.
+    reflexivity.
+  - apply H1.
+    reflexivity. 
+Qed.
 
 Theorem combine_odd_even_elim_odd :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -1042,7 +1097,11 @@ Theorem combine_odd_even_elim_odd :
     odd n = true ->
     Podd n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros HP0 HP1 n H0 H1.
+  unfold combine_odd_even in H0.
+  rewrite H1 in H0.
+  apply H0.
+Qed.
 
 Theorem combine_odd_even_elim_even :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -1050,7 +1109,11 @@ Theorem combine_odd_even_elim_even :
     odd n = false ->
     Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros HP0 HP1 n H0 H1.
+  unfold combine_odd_even in H0.
+  rewrite H1 in H0.
+  apply H0.
+Qed.
 
 (** [] *)
 
