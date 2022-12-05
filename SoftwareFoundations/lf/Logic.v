@@ -1071,8 +1071,7 @@ Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop :=
     match odd n with
       | true => Podd n
       | false => Peven n
-    end
-.
+    end.
 
 (** To test your definition, prove the following facts: *)
 
@@ -1088,7 +1087,7 @@ Proof.
   - apply H0.
     reflexivity.
   - apply H1.
-    reflexivity. 
+    reflexivity.
 Qed.
 
 Theorem combine_odd_even_elim_odd :
@@ -1425,9 +1424,29 @@ Definition tr_rev {X} (l : list X) : list X :=
 
     Prove that the two definitions are indeed equivalent. *)
 
+Lemma rev_append_eq_app_rev:
+  forall X (l1 l2 : list X), rev_append l1 l2 = rev l1 ++ l2.
+Proof.
+  intros X l1. induction l1 as [| h1 t1 IHL1].
+  - (*l1 = []*) reflexivity.
+  - (*l1 = h::t*) intros l2. 
+    simpl. 
+    rewrite <- app_assoc.
+    rewrite IHL1. 
+    reflexivity.
+Qed.
+
 Theorem tr_rev_correct : forall X, @tr_rev X = @rev X.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros X.
+  unfold tr_rev.
+  apply functional_extensionality.
+  intros x. 
+  induction x.
+  - reflexivity.
+  - simpl.
+    apply rev_append_eq_app_rev.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -1504,8 +1523,24 @@ Qed.
 Lemma even_double_conv : forall n, exists k,
   n = if even n then double k else S (double k).
 Proof.
-  (* Hint: Use the [even_S] lemma from [Induction.v]. *)
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  induction n.
+  - exists 0.
+    reflexivity.
+  - rewrite even_S.
+    destruct (even n).
+    + simpl.
+      destruct IHn as [x H0].
+      exists x.
+      apply f_equal.
+      assumption.
+    + simpl.
+      destruct IHn as [x H0].
+      exists (S x).
+      simpl.
+      rewrite H0.
+      reflexivity.
+Qed.
 (** [] *)
 
 (** Now the main theorem: *)
@@ -1669,7 +1704,7 @@ Qed.
 Theorem andb_true_iff : forall b1 b2:bool,
   b1 && b2 = true <-> b1 = true /\ b2 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+Admitted.
 
 Theorem orb_true_iff : forall b1 b2,
   b1 || b2 = true <-> b1 = true \/ b2 = true.
